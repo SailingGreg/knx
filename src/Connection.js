@@ -3,8 +3,6 @@
 * (C) 2016-2018 Elias Karakoulakis
 */
 
-// git test using ssh-key
-
 const util = require('util');
 
 const FSM = require('./FSM');
