@@ -5,6 +5,7 @@
 
 const dgram = require('dgram');
 const KnxLog = require('./KnxLog.js');
+const tcpnet=require('net');
 
 function IpTunnelingConnection(instance) {
   const log = KnxLog.get();
@@ -24,6 +25,14 @@ function IpTunnelingConnection(instance) {
 
   instance.Connect = function () {
     this.localAddress = this.getLocalAddress();
+    // todo: evaluate the connection_type
+
+    // create tcp connection
+    this.client=tcpnet.createConnection({port:8124}, ()=>{
+      this.transition('connecting');
+
+    });
+
     // create the socket
     this.socket = this.BindSocket((socket) => {
       socket.on('error', (errmsg) => log.debug('Socket error: %j', errmsg));
