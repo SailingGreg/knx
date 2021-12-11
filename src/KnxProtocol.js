@@ -11,6 +11,7 @@ const KnxProtocol = new BinaryProtocol();
 const KnxAddress = require('./Address');
 const KnxConstants = require('./KnxConstants');
 const KnxLog = require('./KnxLog');
+const { write } = require('fs');
 
 // defaults
 KnxProtocol.twoLevelAddressing = false;
@@ -704,6 +705,43 @@ KnxProtocol.lengths['KNXNetHeader'] = (value) => {
 // Encapsulated KNXnet/IP Frame: variable length
 // Message Authentication Code: 16 Octet, CBC-MAC/CCM
 
+KnxProtocol.define('SecureWrapper', {
+  read(propertyName) {
+    this.pushStack({
+      header_length: 0,
+      protocol_version: -1,
+      service_type: -1,
+      total_length: 0,
+      secure_sess_id:null,
+      sequence_number: null,
+      serial_number: null,
+      msg_tag: null,
+      encapsulated_frame: null,
+      msg_authentication_code: null,
+    })
+    .UInt8('header_length')
+    .UInt8('protocol_version')
+    .UInt16BE('service_type')
+    .UInt16BE('total_length')
+    .UInt16BE('secure_sess_id')
+    .raw('sequence_number', 6)
+    .raw('serial_number', 6)
+    .UInt16BE('msg_tag')
+    .tap(function (hdr) {
+      let encapsulated_frame_size = hdr.total_length - 6 - 16 - 16;
+      this.raw('encapsulated_frame', encapsulated_frame_size);
+    })
+    .raw('msg_authentication_code', 16)
+    .popStack(propertyName, (data) => {
+      if (KnxProtocol.debug)
+        KnxLog.get().trace(JSON.stringify(data, null, 4));
+      return data;
+    });
+  },
+  write(value){
+    if (!value) throw 'cannot write null secure wrapper frame value';
+    value.total_length = knxlen('SecureWrapper', value);
 
-
+  }
+});
 module.exports = KnxProtocol;
