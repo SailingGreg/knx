@@ -688,4 +688,22 @@ KnxProtocol.lengths['KNXNetHeader'] = (value) => {
   }
 };
 
+/* =================== secure wrapper frame ==================================== */
+// Header Length: 06h
+// Protocol version: 10h
+// Service Type Identifier: 0950h
+// Total length: 2 Octect
+// ==> 8bytes
+
+// Secure Session Identifier: 2 Octect
+// Sequence Information: 6 Octect
+// KNX Serial Number: 6 Octect
+// Message Tag: 2 Octect
+// ==> 16bytes
+
+// Encapsulated KNXnet/IP Frame: variable length
+// Message Authentication Code: 16 Octet, CBC-MAC/CCM
+
+
+
 module.exports = KnxProtocol;
