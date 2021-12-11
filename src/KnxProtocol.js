@@ -11,7 +11,6 @@ const KnxProtocol = new BinaryProtocol();
 const KnxAddress = require('./Address');
 const KnxConstants = require('./KnxConstants');
 const KnxLog = require('./KnxLog');
-const { write } = require('fs');
 
 // defaults
 KnxProtocol.twoLevelAddressing = false;
@@ -754,4 +753,5 @@ KnxProtocol.define('SecureWrapper', {
     .raw(value.msg_authentication_code, 16) // Message Authentication_code
   }
 });
+
 module.exports = KnxProtocol;
