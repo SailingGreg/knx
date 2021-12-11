@@ -713,7 +713,7 @@ KnxProtocol.define('SecureWrapper', {
       service_type: -1,
       total_length: 0,
       secure_sess_id:null,
-      sequence_number: null,
+      sequence_information: null,
       serial_number: null,
       msg_tag: null,
       encapsulated_frame: null,
@@ -724,7 +724,7 @@ KnxProtocol.define('SecureWrapper', {
     .UInt16BE('service_type')
     .UInt16BE('total_length')
     .UInt16BE('secure_sess_id')
-    .raw('sequence_number', 6)
+    .raw('sequence_information', 6)
     .raw('serial_number', 6)
     .UInt16BE('msg_tag')
     .tap(function (hdr) {
@@ -741,7 +741,17 @@ KnxProtocol.define('SecureWrapper', {
   write(value){
     if (!value) throw 'cannot write null secure wrapper frame value';
     value.total_length = knxlen('SecureWrapper', value);
-
+    let encapsulated_frame_size = value.total_length - 6 - 32;
+    this.UInt8(6) // header length (6byte constant)
+    .UInt8(0x10) // protocol version 1.0
+    .UInt16BE(0x0950) // service type
+    .UInt8(value.total_length) // total length
+    .UInt16BE(value.secure_sess_id) // secure session identifier
+    .raw(value.sequence_information, 6) // sequence information
+    .raw(value.serial_number, 6) // serial number
+    .UInt16BE(value.msg_tag) // message tag
+    .raw(value.encapsulated_frame, encapsulated_frame_size) // Encapsulated FrameType
+    .raw(value.msg_authentication_code, 16) // Message Authentication_code
   }
 });
 module.exports = KnxProtocol;
