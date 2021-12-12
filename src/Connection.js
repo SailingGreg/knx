@@ -172,6 +172,13 @@ FSM.prototype.send = function(datagram, callback) {
     const packet = this.writer.KNXNetHeader(datagram);
     const buf = packet.buffer;
     const svctype = KnxConstants.keyText('SERVICE_TYPE', datagram.service_type); // TODO: unused
+
+    // where to encapsulate the KNXnet/IP frame and Message Authentication Code
+    // encapsulate session id using ECDH
+    if (svcType == KnxConstants.SERVICE_TYPE.SESSION_REQUEST) {
+       
+    }
+
     const descr = datagramDesc(datagram);
     KnxLog.get().trace('(%s): Sending %s ==> %j', this.compositeState(), descr, datagram);
     this.socket.send(
