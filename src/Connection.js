@@ -175,8 +175,13 @@ FSM.prototype.send = function(datagram, callback) {
 
     // where to encapsulate the KNXnet/IP frame and Message Authentication code
     // encapsulate session id using ECDH
+    // for now priv_key is test key. to do: how to generate sender key and receive key 
     if (svcType == KnxConstants.SERVICE_TYPE.SESSION_REQUEST) {
-       
+       const SENDER_PRIV='77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a';
+       const RECEIVER_PRIV='de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f';
+       const senderPriv = Uint8Array.from(Buffer.from(SENDER_PRIV, 'hex'));
+       const receiverPriv = Uint8Array.from(Buffer.from(RECEIVER_PRIV, 'hex'));
+       const secret = sharedKey(senderPriv, receiverPriv);
     }
 
     const descr = datagramDesc(datagram);
