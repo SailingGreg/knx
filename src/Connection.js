@@ -2,7 +2,7 @@
 * knx.js - a KNX protocol stack in pure Javascript
 * (C) 2016-2018 Elias Karakoulakis
 */
-
+import {sharedKey} from 'curve25519-js';
 const util = require('util');
 
 const FSM = require('./FSM');
@@ -173,7 +173,7 @@ FSM.prototype.send = function(datagram, callback) {
     const buf = packet.buffer;
     const svctype = KnxConstants.keyText('SERVICE_TYPE', datagram.service_type); // TODO: unused
 
-    // where to encapsulate the KNXnet/IP frame and Message Authentication Code
+    // where to encapsulate the KNXnet/IP frame and Message Authentication code
     // encapsulate session id using ECDH
     if (svcType == KnxConstants.SERVICE_TYPE.SESSION_REQUEST) {
        
