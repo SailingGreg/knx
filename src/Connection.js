@@ -150,6 +150,10 @@ FSM.prototype.prepareDatagram = function(svcType) {
     case KnxConstants.SERVICE_TYPE.TUNNELING_ACK:
       this.AddTunnState(datagram);
       break;
+    case KnxConstants.SERVICE_TYPE.SESSION_REQUEST: // prepare session secure datagram 
+      this.AddHPAI(datagram);
+      // adding Diffie-Hellman Client Public Value to datagram
+      
     default:
       KnxLog.get().debug('Do not know how to deal with svc type %d', svcType);
   }
