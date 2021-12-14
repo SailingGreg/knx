@@ -3,7 +3,7 @@
 * (C) 2016-2018 Elias Karakoulakis
 */
 import {sharedKey} from 'curve25519-js';
-import { generateKeyPair } from 'crypto'; 
+import { crypto } from 'crypto'; 
 const util = require('util');
 
 const FSM = require('./FSM');
@@ -153,7 +153,11 @@ FSM.prototype.prepareDatagram = function(svcType) {
     case KnxConstants.SERVICE_TYPE.SESSION_REQUEST: // prepare session secure datagram 
       this.AddHPAI(datagram);
       // adding Diffie-Hellman Client Public Value to datagram
-      
+      const client=crypto.createDiffieHellman(2048);
+      const clientPubKey=crypto.generateKeys();
+
+      // how to add generated public key to datagram (todo)
+
     default:
       KnxLog.get().debug('Do not know how to deal with svc type %d', svcType);
   }
