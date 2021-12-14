@@ -150,15 +150,21 @@ FSM.prototype.prepareDatagram = function(svcType) {
     case KnxConstants.SERVICE_TYPE.TUNNELING_ACK:
       this.AddTunnState(datagram);
       break;
-    case KnxConstants.SERVICE_TYPE.SESSION_REQUEST: // prepare session secure datagram 
+    case KnxConstants.SERVICE_TYPE.SESSION_REQUEST: // prepare session secure request datagram 
       this.AddHPAI(datagram);
       // adding Diffie-Hellman Client Public Value to datagram
       const client=crypto.createDiffieHellman(2048);
       const clientPubKey=crypto.generateKeys();
 
       // how to add generated public key to datagram (todo)
+      
+      case KnxConstants.SERVICE_TYPE.SESSION_RESPONSE: // prepare session secure response datagram
+      // how to add generated public key to datagram (todo)
 
-    default:
+      // adding Message Authentication Code (Encrypted Data)
+
+      
+      default:
       KnxLog.get().debug('Do not know how to deal with svc type %d', svcType);
   }
   return datagram;
