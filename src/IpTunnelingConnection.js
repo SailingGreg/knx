@@ -27,14 +27,16 @@ function IpTunnelingConnection(instance) {
     this.localAddress = this.getLocalAddress();
     // evaluate the connection_type 
     const range=this.remoteEndpoint.range();
-    if (range == "Unicast") {
+    if (range == "unicast") {
       // create tcp connection
       this.socket=tcpnet.createConnection({
-        host:this.remoteEndpoint.addstring, 
-        port:this.remoteEndpoint.port}, 
+        port:this.remoteEndpoint.port,
+        host:this.remoteEndpoint.addstring 
+        }, 
         ()=>{
-        this.transition('connecting');
+          log.debug('connected to server!');
       });
+      this.transition('connecting');
     }
     else{
       // create the socket (UDP)
