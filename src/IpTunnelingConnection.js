@@ -25,28 +25,29 @@ function IpTunnelingConnection(instance) {
 
   instance.Connect = function () {
     this.localAddress = this.getLocalAddress();
-    // todo: evaluate the connection_type 
-    // IPsecure connection determination should be done by FSM states.
-    // connection type status must be determined in FSM.js 
-    // several independent states for secure connection seem to exist in FSM.
-
-
-    // create tcp connection
-    this.socket=tcpnet.createConnection({port:8124}, ()=>{
-      this.transition('connecting');
-
-    });
-
-    // create the socket
-    this.socket = this.BindSocket((socket) => {
-      socket.on('error', (errmsg) => log.debug('Socket error: %j', errmsg));
-      socket.on('message', (msg, rinfo, callback) => {
-        log.debug('Inbound message: %s', msg.toString('hex'));
-        this.onUdpSocketMessage(msg, rinfo, callback);
+    // evaluate the connection_type 
+    const range=this.remoteEndpoint.range();
+    if (range == "Unicast") {
+      // create tcp connection
+      this.socket=tcpnet.createConnection({
+        host:this.remoteEndpoint.addstring, 
+        port:this.remoteEndpoint.port}, 
+        ()=>{
+        this.transition('connecting');
       });
-      // start connection sequence
-      this.transition('connecting');
-    });
+    }
+    else{
+      // create the socket (UDP)
+      this.socket = this.BindSocket((socket) => {
+        socket.on('error', (errmsg) => log.debug('Socket error: %j', errmsg));
+        socket.on('message', (msg, rinfo, callback) => {
+          log.debug('Inbound message: %s', msg.toString('hex'));
+          this.onUdpSocketMessage(msg, rinfo, callback);
+        });
+        // start connection sequence
+        this.transition('connecting');
+      });
+    }
     return this;
   };
 

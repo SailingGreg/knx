@@ -50,7 +50,9 @@ module.exports = machina.Fsm.extend({
         } // 14/03/2020 Supergiovane: if multicast, disable the localEchoInTunneling, because there is already an echo
         IpRoutingConnection(this);
         break;
-      case 'unicast':
+      case 'unicast': // tcp connection is supported
+        this.useTunneling = true;
+        IpTunnelingConnection(this);
       case 'private':
       case 'loopback':
         this.useTunneling = true;
