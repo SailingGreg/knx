@@ -25,10 +25,14 @@ function IpTunnelingConnection(instance) {
 
   instance.Connect = function () {
     this.localAddress = this.getLocalAddress();
-    // todo: evaluate the connection_type
+    // todo: evaluate the connection_type 
+    // IPsecure connection determination should be done by FSM states.
+    // connection type status must be determined in FSM.js 
+    // several independent states for secure connection seem to exist in FSM.
+
 
     // create tcp connection
-    this.client=tcpnet.createConnection({port:8124}, ()=>{
+    this.socket=tcpnet.createConnection({port:8124}, ()=>{
       this.transition('connecting');
 
     });
