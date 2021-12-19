@@ -157,13 +157,18 @@ FSM.prototype.prepareDatagram = function(svcType) {
       const clientPubKey=crypto.generateKeys();
 
       // how to add generated public key to datagram (todo)
+      datagram.clientPubKey=clientPubKey;
       
       case KnxConstants.SERVICE_TYPE.SESSION_RESPONSE: // prepare session secure response datagram
       // how to add generated public key to datagram (todo)
-
+        const server=crypto.createDiffieHellman(2048);
+        const serverPubKey=crypto.generateKeys();
       // adding Message Authentication Code (Encrypted Data)
+        datagram.serverPubKey=serverPubKey;
+        
+      case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
+        // send password
 
-      
       default:
       KnxLog.get().debug('Do not know how to deal with svc type %d', svcType);
   }
