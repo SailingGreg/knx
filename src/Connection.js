@@ -165,7 +165,12 @@ FSM.prototype.prepareDatagram = function(svcType) {
         const serverPubKey=crypto.generateKeys();
       // adding Message Authentication Code (Encrypted Data)
         datagram.serverPubKey=serverPubKey;
-
+      // generate session identity through ServerPublic key XOR device auth code
+      // mechanism of session key are followings.
+      // 1) get shared secret key using Curve25519(myprivkey, peerspubkey)
+      // 2) get hash using SHA256(shared secret key)
+      // 3) get sesssion key by taking first 16 bytes of hash above
+      //  todo: where to place code for getting peerspubkey
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // send password
 
