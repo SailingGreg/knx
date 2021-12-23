@@ -150,7 +150,27 @@ FSM.prototype.prepareDatagram = function(svcType) {
     case KnxConstants.SERVICE_TYPE.TUNNELING_ACK:
       this.AddTunnState(datagram);
       break;
-    case KnxConstants.SERVICE_TYPE.SESSION_REQUEST: // prepare session secure request datagram 
+    case KnxConstants.SERVICE_TYPE.SESSION_REQUEST: // prepare session secure request datagram
+        // binary format of the the knxnet/ip session request frame
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+        // |         Header Length         |        Protocol Version       |                     |
+        // |         (06h)                 |        (10h)                  |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+                     |
+        // |                     Session Type Identifier                   |  KNXnet/IP secure   |
+        // |                     (0951h)                                   |  Header             |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+                     |
+        // |                           Total Length                        |                     |
+        // |                           (26h+sizeof(HPAI))                  |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+      
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+        // |                     HPAI Control Endpoint                     |                     |
+        // |                     (varaible lenght)                         |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+  Unencrypted Data   |
+        // |             Diffie-Hellman Server Public Value X              |                     |
+        // |             (32 Octet)                                        |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+      
       this.AddHPAI(datagram);
       // adding Diffie-Hellman Client Public Value to datagram
       const client=crypto.createDiffieHellman(2048);
