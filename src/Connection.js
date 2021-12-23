@@ -172,6 +172,25 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // 3) get sesssion key by taking first 16 bytes of hash above
       //  todo: where to place code for getting peerspubkey
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
+        // binary format of the the knxnet/ip session authenticate frame
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+        // |         Header Length         |        Protocol Version       |
+        // |         (06h)                 |        (10h)                  |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+        // |                     Session Type Identifier                   |
+        // |                     (0953h)                                   |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+        // |                           Total Length                        |
+        // |                           (18h)                               |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+        // |         reservered            |          User ID              |             
+        // |         (00h)                 |          (1 Octet)            |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+        // |                   Message Authentication Code                 |
+        // |                   (16 Octet, CBC-MAC/CCM)                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
         // send password
 
       default:
