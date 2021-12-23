@@ -160,6 +160,29 @@ FSM.prototype.prepareDatagram = function(svcType) {
       datagram.clientPubKey=clientPubKey;
       
       case KnxConstants.SERVICE_TYPE.SESSION_RESPONSE: // prepare session secure response datagram
+        // binary format of the the knxnet/ip session response frame
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+        // |         Header Length         |        Protocol Version       |                     |
+        // |         (06h)                 |        (10h)                  |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+                     |
+        // |                     Session Type Identifier                   |  KNXnet/IP secure   |
+        // |                     (0952h)                                   |  Header             |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+                     |
+        // |                           Total Length                        |                     |
+        // |                           (38h)                               |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+      
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+        // |                     Secure Session Identifier                 |                     |
+        // |                     (2 Octet)                                 |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+  Unencrypted Data   |
+        // |             Diffie-Hellman Server Public Value Y              |                     |
+        // |             (32 Octet)                                        |                     |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+        // |                   Message Authenication Code                  |  Encrypted Data     |
+        // |                   (16 Octet)                                  |  (AES128 CCM)       |
+        // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
+
       // how to add generated public key to datagram (todo)
         const server=crypto.createDiffieHellman(2048);
         const serverPubKey=crypto.generateKeys();
@@ -171,6 +194,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // 2) get hash using SHA256(shared secret key)
       // 3) get sesssion key by taking first 16 bytes of hash above
       //  todo: where to place code for getting peerspubkey
+      
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
