@@ -413,6 +413,16 @@ const AddTunn = (datagram) => {
   };
 }
 
+// add the Server public key to datagram
+const addServerPubKey = (datagram, PubKey)=>{
+  datagram.serverPubKey=PubKey;
+}
+
+// add the client public key to datagram
+const addClientPubKey=(datagram, PubKey)=>{
+  datagram.clientPubKey=PubKey;
+}
+
 // TODO: Conncetion is obviously not a constructor, but tests call it with `new`. That should be deprecated.
 function Connection(options) {
   const conn = new FSM(options);
