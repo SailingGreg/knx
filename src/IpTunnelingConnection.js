@@ -37,8 +37,9 @@ function IpTunnelingConnection(instance) {
           log.debug('connected to server!');
           this.transition('connecting');
         });
-      this.socket.on('data', (data)=>{
-
+      this.socket.on('data', (msg)=>{
+        log.debug('Inbound message: %s', msg.toString('hex'));
+        this.onTcpSocketMessage(msg, rinfo, callback);
       });
       this.socket.on('end', ()=>{
         log.debug('disconnected from server');
