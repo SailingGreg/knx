@@ -204,7 +204,8 @@ FSM.prototype.prepareDatagram = function(svcType) {
       const clientPubKey=crypto.generateKeys();
 
       // how to add generated public key to datagram (todo)
-      datagram.clientPubKey=clientPubKey;
+      // datagram.clientPubKey=clientPubKey;
+      this.addClientPubKey(datagram, clientPubKey);
       
       case KnxConstants.SERVICE_TYPE.SESSION_RESPONSE: // prepare session secure response datagram
         // binary format of the the knxnet/ip session response frame
@@ -234,7 +235,9 @@ FSM.prototype.prepareDatagram = function(svcType) {
         const server=crypto.createDiffieHellman(2048);
         const serverPubKey=crypto.generateKeys();
       // adding Message Authentication Code (Encrypted Data)
-        datagram.serverPubKey=serverPubKey;
+      // datagram.serverPubKey=serverPubKey;
+        this.addServerPubKey(datagram, serverPubKey);
+
       // generate session identity through ServerPublic key XOR device auth code
       // mechanism of session key are followings.
       // 1) get shared secret key using Curve25519(myprivkey, peerspubkey)
@@ -291,8 +294,8 @@ FSM.prototype.send = function(datagram, callback) {
     // where to encapsulate the KNXnet/IP frame and Message Authentication code
     // encapsulate session id using ECDH
     // for now priv_key is test key. to do: how to generate sender key and receive key 
-    if (svcType == KnxConstants.SERVICE_TYPE.SESSION_REQUEST)
-    {
+    // if (svcType == KnxConstants.SERVICE_TYPE.SESSION_REQUEST)
+    // {
       //  const SENDER_PRIV='77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a';
       //  const RECEIVER_PRIV='de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f';
       //  const senderPriv = Uint8Array.from(Buffer.from(SENDER_PRIV, 'hex'));
@@ -301,7 +304,7 @@ FSM.prototype.send = function(datagram, callback) {
 
       // where to generate secret key and how to append it for encrypting and decrypting 
       // the payload
-    }
+    // }
 
     const descr = datagramDesc(datagram);
     KnxLog.get().trace('(%s): Sending %s ==> %j', this.compositeState(), descr, datagram);
