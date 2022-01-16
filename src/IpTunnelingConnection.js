@@ -35,8 +35,14 @@ function IpTunnelingConnection(instance) {
         }, 
         ()=>{
           log.debug('connected to server!');
+          this.transition('connecting');
+        });
+      this.socket.on('data', (data)=>{
+
       });
-      this.transition('connecting');
+      this.socket.on('end', ()=>{
+        log.debug('disconnected from server');
+      });
     }
     else{
       // create the socket (UDP)

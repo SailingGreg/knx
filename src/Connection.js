@@ -44,6 +44,33 @@ FSM.prototype.onUdpSocketMessage = function(msg, rinfo, callback) {
   }
 };
 
+// bind incoming TCP packet handler
+
+FSM.prototype.onTcpSocketMessage = function(msg, rinfo, callback){
+  // get the incoming packet's service type ...
+  // function's details are not yet implemented.(todo)
+  // now storing the peer's public key for session_request and session_response
+
+  try {
+    const reader = KnxNetProtocol.createReader(msg);
+    reader.KNXNetHeader('tmp');
+    const dg = reader.next()['tmp'];
+    const descr = datagramDesc(dg);
+    KnxLog.get().trace('(%s): Received %s message: %j', this.compositeState(), descr, dg);
+
+    // storing the peer's pub key
+    if (descr === 'SESSION_REQUEST' || descr==='SESSION_RESPONSE'){
+      this.peerspubkey = dg.PubKey;
+    }
+
+  } catch(err) {
+    KnxLog.get().debug('(%s): Incomplete/unparseable UDP packet: %s: %s',
+      this.compositeState(),err, msg.toString('hex')
+    );
+  }
+
+}
+
 FSM.prototype.AddConnState = function(datagram) {
   datagram.connstate = {
     channel_id: this.channel_id,
