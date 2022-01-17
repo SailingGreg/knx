@@ -247,8 +247,8 @@ FSM.prototype.prepareDatagram = function(svcType) {
       //  todo: where to place code for getting peerspubkey
       const shared_secret = server.computeSecret(this.pubkey.client);
       const hash = SHA256(shared_secret);
-
       const session_key = Buffer.from(shared_secret).toString('hex', 0, 15);
+      datagram.sessionId = session_key;
       
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame

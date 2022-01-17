@@ -603,6 +603,9 @@ KnxProtocol.define('KNXNetHeader', {
           case KnxConstants.SERVICE_TYPE.SESSION_REQUEST:
             this.HPAI('hpai').raw('pubkey', 32);
             break;
+          // define the read mechanism for SESSION_RESPONSE
+          case KnxConstants.SERVICE_TYPE.SESSION_RESPONSE:
+            this.raw('sessionId').raw('pubkey', 32);
           default: {
             KnxLog.get().warn(
               'read KNXNetHeader: unhandled serviceType = %s',
@@ -653,6 +656,11 @@ KnxProtocol.define('KNXNetHeader', {
       // session_request case:
       case KnxConstants.SERVICE_TYPE.SESSION_REQUEST:{
         if (value.hpai) this.HPAI(value.hpai);
+        if (value.pubkey) this.raw(value.pubkey, 32);
+      }
+      // session_response case:
+      case KnxConstants.SERVICE_TYPE.SEARCH_RESPONSE:{
+        if (value.sessionId)  this.raw(value.sessionId, 2);
         if (value.pubkey) this.raw(value.pubkey, 32);
       }
 
