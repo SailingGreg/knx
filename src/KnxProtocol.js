@@ -655,6 +655,7 @@ KnxProtocol.define('KNXNetHeader', {
         if (value.hpai) this.HPAI(value.hpai);
         if (value.pubkey) this.raw(value.pubkey, 32);
       }
+
       // case KnxConstants.SERVICE_TYPE.DESCRIPTION_RESPONSE: {
       default: {
         throw util.format(

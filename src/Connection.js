@@ -59,9 +59,8 @@ FSM.prototype.onTcpSocketMessage = function(msg, rinfo, callback){
     KnxLog.get().trace('(%s): Received %s message: %j', this.compositeState(), descr, dg);
 
     // storing the peer's pub key
-    if (descr === 'SESSION_REQUEST' || descr==='SESSION_RESPONSE'){
-      this.peerspubkey = dg.pubkey;
-    }
+    if (descr === 'SESSION_REQUEST')  this.pubkey.client = dg.pubkey;
+    if (descr === 'SESSION_RESPONSE') this.pubkey.server = dg.pubkey;
 
   } catch(err) {
     KnxLog.get().debug('(%s): Incomplete/unparseable UDP packet: %s: %s',
@@ -244,6 +243,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // 2) get hash using SHA256(shared secret key)
       // 3) get sesssion key by taking first 16 bytes of hash above
       //  todo: where to place code for getting peerspubkey
+      const shared_secret=server.computeSecret(this.pubkey.client);
       
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
