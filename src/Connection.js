@@ -3,7 +3,8 @@
 * (C) 2016-2018 Elias Karakoulakis
 */
 import {sharedKey} from 'curve25519-js';
-import { crypto } from 'crypto'; 
+import { crypto } from 'crypto';
+
 const util = require('util');
 
 const FSM = require('./FSM');
@@ -11,6 +12,7 @@ const DPTLib = require('./dptlib');
 const KnxLog = require('./KnxLog');
 const KnxConstants = require('./KnxConstants');
 const KnxNetProtocol = require('./KnxProtocol');
+const SHA256=require("crypto-js/sha256");
 
 // bind incoming UDP packet handler
 FSM.prototype.onUdpSocketMessage = function(msg, rinfo, callback) {
@@ -243,7 +245,10 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // 2) get hash using SHA256(shared secret key)
       // 3) get sesssion key by taking first 16 bytes of hash above
       //  todo: where to place code for getting peerspubkey
-      const shared_secret=server.computeSecret(this.pubkey.client);
+      const shared_secret = server.computeSecret(this.pubkey.client);
+      const hash = SHA256(shared_secret);
+
+      const session_key = Buffer.from(shared_secret).toString('hex', 0, 15);
       
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
