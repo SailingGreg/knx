@@ -60,7 +60,7 @@ FSM.prototype.onTcpSocketMessage = function(msg, rinfo, callback){
 
     // storing the peer's pub key
     if (descr === 'SESSION_REQUEST' || descr==='SESSION_RESPONSE'){
-      this.peerspubkey = dg.PubKey;
+      this.peerspubkey = dg.pubkey;
     }
 
   } catch(err) {
@@ -205,7 +205,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
 
       // how to add generated public key to datagram (todo)
       // datagram.clientPubKey=clientPubKey;
-      this.addClientPubKey(datagram, clientPubKey);
+      this.addPubKey(datagram, clientPubKey);
       
       case KnxConstants.SERVICE_TYPE.SESSION_RESPONSE: // prepare session secure response datagram
         // binary format of the the knxnet/ip session response frame
@@ -236,7 +236,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
         const serverPubKey=crypto.generateKeys();
       // adding Message Authentication Code (Encrypted Data)
       // datagram.serverPubKey=serverPubKey;
-        this.addServerPubKey(datagram, serverPubKey);
+        this.addPubKey(datagram, serverPubKey);
 
       // generate session identity through ServerPublic key XOR device auth code
       // mechanism of session key are followings.
@@ -443,14 +443,9 @@ const AddTunn = (datagram) => {
   };
 }
 
-// add the Server public key to datagram
-const addServerPubKey = (datagram, PubKey)=>{
-  datagram.serverPubKey=PubKey;
-}
-
-// add the client public key to datagram
-const addClientPubKey=(datagram, PubKey)=>{
-  datagram.clientPubKey=PubKey;
+// add the public key to datagram
+const addPubKey=(datagram, PubKey)=>{
+  datagram.pubkey=PubKey;
 }
 
 // TODO: Conncetion is obviously not a constructor, but tests call it with `new`. That should be deprecated.

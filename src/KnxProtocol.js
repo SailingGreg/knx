@@ -599,6 +599,10 @@ KnxProtocol.define('KNXNetHeader', {
           case KnxConstants.SERVICE_TYPE.ROUTING_INDICATION:
             this.CEMI('cemi');
             break;
+          // define the read mechanism for session_request
+          case KnxConstants.SERVICE_TYPE.SESSION_REQUEST:
+            this.HPAI('hpai').raw('pubkey', 32);
+            break;
           default: {
             KnxLog.get().warn(
               'read KNXNetHeader: unhandled serviceType = %s',
@@ -645,6 +649,11 @@ KnxProtocol.define('KNXNetHeader', {
         if (value.tunnstate) this.TunnState(value.tunnstate);
         if (value.cemi) this.CEMI(value.cemi);
         break;
+      }
+      // session_request case:
+      case KnxConstants.SERVICE_TYPE.SESSION_REQUEST:{
+        if (value.hpai) this.HPAI(value.hpai);
+        if (value.pubkey) this.raw(value.pubkey, 32);
       }
       // case KnxConstants.SERVICE_TYPE.DESCRIPTION_RESPONSE: {
       default: {
