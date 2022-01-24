@@ -261,7 +261,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
                     + datagram.service_type.toString('hex')
                     + datagram.total_length.toString('hex')
                     + datagram.sessionId
-                    + (this.pubKey.client XOR serverPubKey);   // symbol ^ means logic multiplication of two binaries  
+                    + (this.pubKey.client ^ serverPubKey);   // symbol ^ means XOR bit in operations  
       const key = this.authenticationCode;
       const hashLen = 16;
       datagram.mac = aesCbcMac.create(message, key, hashLen);
