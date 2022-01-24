@@ -12,7 +12,8 @@ const DPTLib = require('./dptlib');
 const KnxLog = require('./KnxLog');
 const KnxConstants = require('./KnxConstants');
 const KnxNetProtocol = require('./KnxProtocol');
-const SHA256=require("crypto-js/sha256");
+const CryptoJS = require("crypto-js");
+const aesCbcMac = require("aes-cbc-mac");
 
 // bind incoming UDP packet handler
 FSM.prototype.onUdpSocketMessage = function(msg, rinfo, callback) {
@@ -61,8 +62,8 @@ FSM.prototype.onTcpSocketMessage = function(msg, rinfo, callback){
     KnxLog.get().trace('(%s): Received %s message: %j', this.compositeState(), descr, dg);
 
     // storing the peer's pub key
-    if (descr === 'SESSION_REQUEST')  this.pubkey.client = dg.pubkey;
-    if (descr === 'SESSION_RESPONSE') this.pubkey.server = dg.pubkey;
+    if (descr === 'SESSION_REQUEST')  this.pubKey.client = dg.pubkey;
+    if (descr === 'SESSION_RESPONSE') this.pubKey.server = dg.pubkey;
 
   } catch(err) {
     KnxLog.get().debug('(%s): Incomplete/unparseable UDP packet: %s: %s',
@@ -228,7 +229,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
         // |             Diffie-Hellman Server Public Value Y              |                     |
         // |             (32 Octet)                                        |                     |
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
-        // |                   Message Authenication Code                  |  Encrypted Data     |
+        // |                   Message Authentication Code                  |  Encrypted Data     |
         // |                   (16 Octet)                                  |  (AES128 CCM)       |
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+---------------------+
 
@@ -245,11 +246,26 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // 2) get hash using SHA256(shared secret key)
       // 3) get sesssion key by taking first 16 bytes of hash above
       //  todo: where to place code for getting peerspubkey
-      const shared_secret = server.computeSecret(this.pubkey.client);
-      const hash = SHA256(shared_secret);
+      const shared_secret = server.computeSecret(this.pubKey.client);
+      const hash = CryptoJS.SHA256(shared_secret);
+      // convert hash to big-endian (todo)
+
       const session_key = Buffer.from(shared_secret).toString('hex', 0, 15);
       datagram.sessionId = session_key;
-      
+
+      // calculate Message Authentication Code (40 octets)
+      // Secure Header | Secure session_identifier | (Client Public Key X ^ Server Public Key Y)
+      // encrypt with device authentication code
+      const message=datagram.header_length.toString('hex') 
+                    + datagram.protocol_version.toString('hex')
+                    + datagram.service_type.toString('hex')
+                    + datagram.total_length.toString('hex')
+                    + datagram.sessionId
+                    + (this.pubKey.client XOR serverPubKey);   // symbol ^ means logic multiplication of two binaries  
+      const key = this.authenticationCode;
+      const hashLen = 16;
+      datagram.mac = aesCbcMac.create(message, key, hashLen);
+
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
@@ -270,7 +286,19 @@ FSM.prototype.prepareDatagram = function(svcType) {
         // |                   Message Authentication Code                 |
         // |                   (16 Octet, CBC-MAC/CCM)                     |
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
-        // send password
+
+        datagram.reserved = Buffer.from('00h', hex);
+        // session_authentication frames must be wrapped in SECURE_WRAPPER frame for security
+        // encrypt the session_authentication frames using session key.
+        // available user ids are followings:
+        // 00h: Reserved, shall not be used  01h: Management level access  02h-7Fh: User level access
+        // 80h-FFh: Reserved, Reserved, shall not be used
+        // userID must be determined by services accepted by server after authentication
+        // so it is not stored here
+        if (!this.authenticated)     datagram.userID = '00h';
+
+        // Message Authentication Code
+
 
       default:
       KnxLog.get().debug('Do not know how to deal with svc type %d', svcType);

@@ -65,6 +65,29 @@ module.exports = machina.Fsm.extend({
           range
         );
     }
+
+    // set authentication code (todo)
+    // DeviceAuthenticationCode = PBKDF2(HMAC-SHA256,<SECRET>,
+    // "device-authentication-code.1.secure.ip.knx.org", 65.536, 128)
+    this.authenticationCodeSecret = "notDefinedYet";
+    this.authenticationCode = PBKDF2(HMAC-SHA256,authenticationCodeSecret,"device-authentication-code.1.secure.ip.knx.org", 65.536, 128);
+
+    // set the user password (todo)
+    // PasswordHash = PBKDF2(HMAC-SHA256,<SECRET>,
+    // "user-password.1.secure.ip.knx.org", 65.536, 128)
+    this.userPasswordSecret = "notDefinedYet";
+    this.userPassword = PBKDF2(HMAC-SHA256, userPasswordSecret, "user-password.1.secure.ip.knx.org", 65.536, 128);
+
+    // set serial_number
+    this.serial_Number='notDefinedYet';
+    // set object for storing peer's public key
+    this.pubKey = {
+      client: null,
+      server: null,
+    }
+
+    // set the bool variable which determine the secure_session is authencated or not
+    this.authencated = false;
   },
 
   namespace: 'knxnet',

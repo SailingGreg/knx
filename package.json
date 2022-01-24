@@ -75,6 +75,7 @@
   ],
   "dependencies": {
     "@types/node": "^6.14.4",
+    "aes-cbc-mac": "^1.0.1",
     "binary-parser": "1.1.5",
     "binary-protocol": "0.0.0",
     "crypto-js": "^4.1.1",
