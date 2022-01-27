@@ -262,13 +262,13 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // calculate Message Authentication Code (40 octets)
       // Secure Header | Secure session_identifier | (Client Public Key X ^ Server Public Key Y)
       // encrypt with device authentication code
-      const message=datagram.header_length.toString('hex') 
+      const message = Buffer.from(datagram.header_length.toString('hex') 
                     + datagram.protocol_version.toString('hex')
                     + datagram.service_type.toString('hex')
                     + datagram.total_length.toString('hex')
-                    + datagram.sessionId
-                    + (this.pubKey.client ^ serverPubKey);   // symbol ^ means XOR bit operation 
-      const key = this.authenticationCode;
+                    + datagram.sessionId.toString('hex')
+                    + (this.pubKey.client ^ serverPubKey));   // symbol ^ means XOR bit operation 
+      const key = Buffer.from(this.deviceAuthenticationCode, 'hex');
       const hashLen = 16;
       datagram.mac = aesCbcMac.create(message, key, hashLen);
 

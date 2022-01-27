@@ -69,8 +69,8 @@ module.exports = machina.Fsm.extend({
     // set authentication code (todo)
     // DeviceAuthenticationCode = PBKDF2(HMAC-SHA256,<SECRET>,
     // "device-authentication-code.1.secure.ip.knx.org", 65.536, 128)
-    this.authenticationCodeSecret = "notDefinedYet";
-    this.authenticationCode = PBKDF2(HMAC-SHA256,authenticationCodeSecret,"device-authentication-code.1.secure.ip.knx.org", 65.536, 128);
+    this.deviceAuthenticationCodeSecret = "notDefinedYet";
+    this.deviceAuthenticationCode = PBKDF2(HMAC-SHA256,authenticationCodeSecret,"device-authentication-code.1.secure.ip.knx.org", 65.536, 128);
 
     // set the user password (todo)
     // PasswordHash = PBKDF2(HMAC-SHA256,<SECRET>,
