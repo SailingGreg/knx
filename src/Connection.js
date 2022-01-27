@@ -4,6 +4,7 @@
 */
 import {sharedKey} from 'curve25519-js';
 import { crypto } from 'crypto';
+import { endianness } from 'os';
 
 const util = require('util');
 
@@ -65,6 +66,7 @@ FSM.prototype.onTcpSocketMessage = function(msg, rinfo, callback){
     if (descr === 'SESSION_REQUEST')  this.pubKey.client = dg.pubkey;
     if (descr === 'SESSION_RESPONSE') this.pubKey.server = dg.pubkey;
 
+    this.handle(signal, dg);
   } catch(err) {
     KnxLog.get().debug('(%s): Incomplete/unparseable UDP packet: %s: %s',
       this.compositeState(),err, msg.toString('hex')
@@ -247,10 +249,14 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // 3) get sesssion key by taking first 16 bytes of hash above
       //  todo: where to place code for getting peerspubkey
       const shared_secret = server.computeSecret(this.pubKey.client);
-      const hash = CryptoJS.SHA256(shared_secret);
+      var hash = CryptoJS.SHA256(shared_secret);
       // convert hash to big-endian (todo)
-
-      const session_key = Buffer.from(shared_secret).toString('hex', 0, 15);
+      // assume that sha256() returns little-endian hex string
+      // general mechanism of converting little endian into big endian
+      var reverse_endian_hash = parseInt('0x' + hash.match(/../g).reverse().join(''));
+      
+      // get session key from little endian hash
+      const session_key = Buffer.from(reverse_endian_hash).toString('hex', 0, 15);
       datagram.sessionId = session_key;
 
       // calculate Message Authentication Code (40 octets)
@@ -261,7 +267,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
                     + datagram.service_type.toString('hex')
                     + datagram.total_length.toString('hex')
                     + datagram.sessionId
-                    + (this.pubKey.client ^ serverPubKey);   // symbol ^ means XOR bit in operations  
+                    + (this.pubKey.client ^ serverPubKey);   // symbol ^ means XOR bit operation 
       const key = this.authenticationCode;
       const hashLen = 16;
       datagram.mac = aesCbcMac.create(message, key, hashLen);
@@ -286,8 +292,9 @@ FSM.prototype.prepareDatagram = function(svcType) {
         // |                   Message Authentication Code                 |
         // |                   (16 Octet, CBC-MAC/CCM)                     |
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
+        // send Password
 
-        datagram.reserved = Buffer.from('00h', hex);
+        datagram.reserved = Buffer.from('00h', 'hex');
         // session_authentication frames must be wrapped in SECURE_WRAPPER frame for security
         // encrypt the session_authentication frames using session key.
         // available user ids are followings:
@@ -295,7 +302,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
         // 80h-FFh: Reserved, Reserved, shall not be used
         // userID must be determined by services accepted by server after authentication
         // so it is not stored here
-        if (!this.authenticated)     datagram.userID = '00h';
+        if (!this.authenticated)     datagram.userID = Buffer.from('00h', 'hex');
 
         // Message Authentication Code
 
