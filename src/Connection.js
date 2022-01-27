@@ -262,15 +262,15 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // calculate Message Authentication Code (40 octets)
       // Secure Header | Secure session_identifier | (Client Public Key X ^ Server Public Key Y)
       // encrypt with device authentication code
-      const message = Buffer.from(datagram.header_length.toString('hex') 
+      const resMsg = Buffer.from(datagram.header_length.toString('hex') 
                     + datagram.protocol_version.toString('hex')
                     + datagram.service_type.toString('hex')
                     + datagram.total_length.toString('hex')
                     + datagram.sessionId.toString('hex')
                     + (this.pubKey.client ^ serverPubKey));   // symbol ^ means XOR bit operation 
-      const key = Buffer.from(this.deviceAuthenticationCode, 'hex');
+      const resKey = Buffer.from(this.deviceAuthenticationCode, 'hex');
       const hashLen = 16;
-      datagram.mac = aesCbcMac.create(message, key, hashLen);
+      datagram.mac = aesCbcMac.create(resMsg, resKey, hashLen);
 
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
@@ -294,7 +294,7 @@ FSM.prototype.prepareDatagram = function(svcType) {
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
         // send Password
 
-        datagram.reserved = Buffer.from('00h', 'hex');
+        datagram.reserved = Buffer.from(parseInt('0x00', 'hex').toString());
         // session_authentication frames must be wrapped in SECURE_WRAPPER frame for security
         // encrypt the session_authentication frames using session key.
         // available user ids are followings:
@@ -305,7 +305,15 @@ FSM.prototype.prepareDatagram = function(svcType) {
         if (!this.authenticated)     datagram.userID = Buffer.from('00h', 'hex');
 
         // Message Authentication Code
-
+        const authMsg = Buffer.from(datagram.header_length.toString('hex') 
+                    + datagram.protocol_version.toString('hex')
+                    + datagram.service_type.toString('hex')
+                    + datagram.total_length.toString('hex')
+                    + '0x00'
+                    + datagram.userID.toString()
+                    + (this.pubKey.client ^ serverPubKey));   // symbol ^ means XOR bit operation 
+        const authKey = Buffer.from(this.deviceAuthenticationCode, 'hex');
+        datagram.mac = aesCbcMac.create(authMsg, authKey, hashLen);
 
       default:
       KnxLog.get().debug('Do not know how to deal with svc type %d', svcType);
