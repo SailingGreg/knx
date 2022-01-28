@@ -272,6 +272,52 @@ FSM.prototype.prepareDatagram = function(svcType) {
       const hashLen = 16;
       datagram.mac = aesCbcMac.create(resMsg, resKey, hashLen);
 
+
+      // the paper shows we should use CCM not CBC-MAC method in calculating MAC
+      // so I copied the CCM calculation example below
+      
+      // import { Buffer } from 'buffer';
+      // const {
+      //   createCipheriv,
+      //   createDecipheriv,
+      //   randomBytes
+      // } = await import('crypto');
+      
+      // const key = 'keykeykeykeykeykeykeykey';
+      // const nonce = randomBytes(12);
+      
+      // const aad = Buffer.from('0123456789', 'hex');
+      
+      // const cipher = createCipheriv('aes-192-ccm', key, nonce, {
+      //   authTagLength: 16
+      // });
+      // const plaintext = 'Hello world';
+      // cipher.setAAD(aad, {
+      //   plaintextLength: Buffer.byteLength(plaintext)
+      // });
+      // const ciphertext = cipher.update(plaintext, 'utf8');
+      // cipher.final();
+      // const tag = cipher.getAuthTag();
+      
+      // // Now transmit { ciphertext, nonce, tag }.
+      
+      // const decipher = createDecipheriv('aes-192-ccm', key, nonce, {
+      //   authTagLength: 16
+      // });
+      // decipher.setAuthTag(tag);
+      // decipher.setAAD(aad, {
+      //   plaintextLength: ciphertext.length
+      // });
+      // const receivedPlaintext = decipher.update(ciphertext, null, 'utf8');
+      
+      // try {
+      //   decipher.final();
+      // } catch (err) {
+      //   throw new Error('Authentication failed!', { cause: err });
+      // }
+      
+      // console.log(receivedPlaintext);
+
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
         // +-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+-7-+-6-+-5-+-4-+-3-+-2-+-1-+-0-+
