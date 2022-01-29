@@ -273,9 +273,9 @@ FSM.prototype.prepareDatagram = function(svcType) {
       datagram.mac = aesCbcMac.create(resMsg, resKey, hashLen);
 
 
-      // the paper shows we should use CCM not CBC-MAC method in calculating MAC
+      // the paper shows we should not use CBC-MAC method but CCM for calculating MAC
       // so I copied the CCM calculation example below
-      
+
       // import { Buffer } from 'buffer';
       // const {
       //   createCipheriv,
@@ -317,6 +317,13 @@ FSM.prototype.prepareDatagram = function(svcType) {
       // }
       
       // console.log(receivedPlaintext);
+
+      // for session_response messages
+      // AAD = Secure Header | Secure Session Identifier | (ECDH Client Pub Key ^ Server Pub Key)
+      // Payload is empty
+      // B0: first block for CBC-MAC calculation
+      // Ctr0: Block counter 
+      // how to implement the above content into code (todo)
 
       case KnxConstants.SERVICE_TYPE.SESSION_AUTHENTICATE:
         // binary format of the the knxnet/ip session authenticate frame
