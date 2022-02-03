@@ -69,14 +69,14 @@ module.exports = machina.Fsm.extend({
     // set authentication code (todo)
     // DeviceAuthenticationCode = PBKDF2(HMAC-SHA256,<SECRET>,
     // "device-authentication-code.1.secure.ip.knx.org", 65.536, 128)
-    this.deviceAuthenticationCodeSecret = "notDefinedYet";
-    this.deviceAuthenticationCode = PBKDF2(HMAC-SHA256,authenticationCodeSecret,"device-authentication-code.1.secure.ip.knx.org", 65.536, 128);
+    // this.deviceAuthenticationCodeSecret = "notDefinedYet";
+    // this.deviceAuthenticationCode = PBKDF2(HMAC-SHA256,authenticationCodeSecret,"device-authentication-code.1.secure.ip.knx.org", 65.536, 128);
 
     // set the user password (todo)
     // PasswordHash = PBKDF2(HMAC-SHA256,<SECRET>,
     // "user-password.1.secure.ip.knx.org", 65.536, 128)
-    this.userPasswordSecret = "notDefinedYet";
-    this.userPassword = PBKDF2(HMAC-SHA256, userPasswordSecret, "user-password.1.secure.ip.knx.org", 65.536, 128);
+    // this.userPasswordSecret = "notDefinedYet";
+    // this.userPassword = PBKDF2(HMAC-SHA256, userPasswordSecret, "user-password.1.secure.ip.knx.org", 65.536, 128);
 
     // set serial_number
     this.serial_Number='notDefinedYet';

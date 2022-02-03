@@ -2,9 +2,9 @@
 * knx.js - a KNX protocol stack in pure Javascript
 * (C) 2016-2018 Elias Karakoulakis
 */
-import {sharedKey} from 'curve25519-js';
-import { crypto } from 'crypto';
-import { endianness } from 'os';
+const sharedKey = require('curve25519-js');
+const crypto = require('crypto');
+const endianness = require('os');
 
 const util = require('util');
 
