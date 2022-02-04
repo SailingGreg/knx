@@ -33,7 +33,7 @@ function IpTunnelingConnection(instance) {
         port: this.remoteEndpoint.port,
         host: this.remoteEndpoint.addrstring
         }, 
-        ()=>{
+        () => {
           log.debug('connected to server!');
           this.transition('connecting');
         });
@@ -43,6 +43,16 @@ function IpTunnelingConnection(instance) {
       });
       this.socket.on('end', ()=>{
         log.debug('disconnected from server');
+      });
+      this.socket.on('close', ()=>{
+        log.debug('connection closed');
+      });
+      this.socket.on('lookup', () => {
+        log.debug('lookup');
+      });
+      this.socket.on('error', (msg) => {
+        console.log('Error: ', msg)
+        log.debug('Error: %s', msg.toString('hex'));
       });
     }
     else {

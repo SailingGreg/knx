@@ -14,6 +14,9 @@ const test = require('tape');
 test('KNX connect routing', function(t) {
   var connection = knx.Connection({
     loglevel: 'trace',
+    // UNCOMMENT THIS AND PUT KNX DEVICE ADDESS HERE
+    // ipAddr: THIS HAS TO BE FILLED TO REPRODUCE ERROR,
+    // ipPort: THIS HAS TO BE FILLED TO REPRODUCE ERROR,
     handlers: {
       connected: function() {
         console.log('----------');
@@ -35,4 +38,4 @@ test('KNX connect routing', function(t) {
 setTimeout(function() {
   console.log('Exiting with timeout...');
   process.exit(2);
-}, 1000);
+}, 60000);
