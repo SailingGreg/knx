@@ -34,7 +34,7 @@ if (process.env.hasOwnProperty('WIREDTEST')) {
           console.log('Connected!');
           console.log('----------');
           t.pass('connected in TUNNELING mode');
-          this.Disconnect();
+          connection.disconnect();
         },
         disconnected: function() {
           t.pass('disconnected in TUNNELING mode');

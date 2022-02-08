@@ -28,7 +28,10 @@ if (process.env.hasOwnProperty('WIREDTEST')) {
         connected: function() {
           t.pass('connected in hybrid mode');
           t.end();
-          process.exit(0);
+          connection.disconnect();
+          connection.on('disconnected', () => {
+            process.exit(0);
+          })
         },
         error: function(connstatus) {
           t.fail('error connecting: '+connstatus);

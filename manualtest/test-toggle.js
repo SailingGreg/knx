@@ -42,7 +42,10 @@ var connection = knx.Connection({
 			process.stdin.on('data', (data) => {
 				console.log(JSON.stringify(data));
 				if (data[0] === 113) {
-					process.exit(0);
+          connection.disconnect();
+          connection.on('disconnected', () => {
+            process.exit(0);
+          })
 					return;
 				}
 				dpVal = !dpVal;
