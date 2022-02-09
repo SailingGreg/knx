@@ -11,7 +11,8 @@
     "url": "https://ekarak@bitbucket.org/ekarak/knx.js.git"
   },
   "scripts": {
-    "test": "multi-tape test/*/test-*.js"
+    "test": "multi-tape test/*/test-*.js",
+    "test-connection": "multi-tape test/*/test-connect-routing.js"
   },
   "license": "MIT",
   "author": {

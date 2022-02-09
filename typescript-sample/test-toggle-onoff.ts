@@ -33,7 +33,7 @@ async function onConnected() {
     dp.write(0)
     await wait(2000)
 
-    connection.Disconnect()
+    connection.Disconnect();
 }
 
 function wait(ms: number) {

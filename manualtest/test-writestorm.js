@@ -35,6 +35,10 @@ var connection = knx.Connection({
       setupSwitch('1/1/6', '1/1/106').write(v);
       setupSwitch('1/1/7', '1/1/107').write(v);
       setupSwitch('1/1/8', '1/1/108').write(v);
+      connection.Disconnect();
+      connection.on('disconnected', () => {
+        process.exit(0);
+      })
     },
     error: function( errmsg ) {
       console.error(errmsg);

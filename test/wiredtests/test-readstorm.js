@@ -56,7 +56,10 @@ if (process.env.hasOwnProperty('WIREDTEST')) {
             if (Object.keys(readback).length == options.readstorm_range) {
               t.pass(util.format('readstorm: all %d datapoints accounted for', options.readstorm_range));
               t.end();
-              process.exit(0);
+              connection.Disconnect();
+              connection.on('disconnected', () => {
+                process.exit(0);
+              })
             }
           }
         },

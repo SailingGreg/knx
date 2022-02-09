@@ -6,14 +6,22 @@
 Error.stackTraceLimit = Infinity;
 
 const knx = require('../..');
-const address = require('../../src/Address.js');
-const assert = require('assert');
 const test = require('tape');
 
-//
 test('KNX connect routing', function(t) {
+  let ipAddr; // FILL THIS
+  let ipPort; // FILL THIS
+
+  if(!ipAddr || !ipPort) {
+    t.skip('No ip/port of test device')
+    t.end();
+    process.exit(0);
+  }
+ 
   var connection = knx.Connection({
-    loglevel: 'trace',
+    loglevel: 'debug',
+    ipAddr,
+    ipPort,
     handlers: {
       connected: function() {
         console.log('----------');
@@ -21,7 +29,10 @@ test('KNX connect routing', function(t) {
         console.log('----------');
         t.pass('connected in routing mode');
         t.end();
-        process.exit(0);
+        connection.Disconnect();
+        connection.on('disconnected', () => {
+          process.exit(0);
+        })
       },
       error: function() {
         t.fail('error connecting');
