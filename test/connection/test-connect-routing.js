@@ -29,7 +29,7 @@ test('KNX connect routing', function(t) {
         console.log('----------');
         t.pass('connected in routing mode');
         t.end();
-        connection.disconnect();
+        connection.Disconnect();
         connection.on('disconnected', () => {
           process.exit(0);
         })

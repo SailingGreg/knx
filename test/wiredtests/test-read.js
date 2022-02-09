@@ -31,7 +31,7 @@ if (process.env.hasOwnProperty('WIREDTEST')) {
             console.log("KNX response from %s: %j", src, response);
             t.pass(util.format('read temperature:  %s', response));
             t.end();
-            connection.disconnect();
+            connection.Disconnect();
             connection.on('disconnected', () => {
               process.exit(0);
             })

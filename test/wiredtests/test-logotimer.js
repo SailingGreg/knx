@@ -29,7 +29,7 @@ if (process.env.hasOwnProperty('WIREDTEST')) {
           timer_status.read(function(src, response) {
             t.pass(util.format("**** Timer status response: %j", response));
             t.end();
-            connection.disconnect();
+            connection.Disconnect();
             connection.on('disconnected', () => {
               process.exit(0);
             })

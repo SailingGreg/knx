@@ -38,7 +38,7 @@ if (process.env.hasOwnProperty('WIREDTEST')) {
             if (counter == 4) {
               t.pass('all 4 responses received');
               t.end();
-              connection.disconnect();
+              connection.Disconnect();
               connection.on('disconnected', () => {
                 process.exit(0);
               })

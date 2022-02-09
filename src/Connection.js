@@ -275,7 +275,7 @@ FSM.prototype.read = function(grpaddr, callback) {
   });
 }
 
-FSM.prototype.disconnect = function() {
+FSM.prototype.Disconnect = function() {
   this.transition('disconnecting');
   // machina.js removeAllListeners equivalent:
   // this.off();
